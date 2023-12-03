@@ -15,14 +15,21 @@ mouse = pd.read_csv(m, comment="#")
 human = human['probe_seq'].str[5:-5].tolist()
 mouse = mouse['probe_seq'].str[5:-5].tolist()
 
+hv = 'Visium_Human_Transcriptome_Probe_Set_v2.0_GRCh38-2020-A.csv'
+mv = 'Visium_Mouse_Transcriptome_Probe_Set_v1.0_mm10-2020-A.csv'
+human_visium = pd.read_csv(hv, comment="#")
+mouse_visium = pd.read_csv(mv, comment="#")
+human_visium = human_visium['probe_seq'].str[5:-5].tolist()
+mouse_visium = mouse_visium['probe_seq'].str[5:-5].tolist()
+
 xenium = []
 for name, seq in pyfastx.Fasta('xenium_human_brain_gene_expression_panel_v1_probe_sequences.fasta', build_index=False, uppercase=True):
     xenium.append(seq)
 for name, seq in pyfastx.Fasta('xenium_mouse_brain_gene_expression_panel_v1.1_probe_sequences.fasta', build_index=False, uppercase=True):
     xenium.append(seq)
 
-merged = human + mouse + xenium
-
+merged = human + mouse + human_visium + mouse_visium + xenium
+merged = set(merged)
 left = [w[:20] for w in merged]
 right = [w[:-20] for w in merged]
 
@@ -34,7 +41,8 @@ lib = []
 dist = int(sys.argv[2])
 for i in library:
     flag = False
-    if i[19:21] == "AT" or i[19:21] == "TA" or i[19:21] == "GA" or i[19:21] == "AG":
+    lig = i[19:21]
+    if lig == "AT" or lig == "TA" or lig == "GA" or lig == "AG":
         for probe in left:
             l = i[:20]
             ham = hamming(l, probe)
@@ -53,4 +61,4 @@ for i in library:
                  break
         if flag:
             continue
-    print(i)
+        print(i)
