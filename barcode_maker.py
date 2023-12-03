@@ -5,9 +5,8 @@ import sys
 import pyfastx
 
 # python barcode_maker.py NUM_SEQ DISTANCE ITERATIONS > out.txt
-
 #blacklist = set(['CG', 'GT', 'GG', 'GC'])
-pref = set(["AT", "TA", "GA", "AG"])
+#pref = set(["AT", "TA", "GA", "AG"])
 
 h = 'Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv'
 m = 'Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv'
@@ -27,30 +26,31 @@ merged = human + mouse + xenium
 left = [w[:20] for w in merged]
 right = [w[:-20] for w in merged]
 
-dist = int(sys.argv[2])
+library = set()
+for it in range(int(sys.argv[3])):
+    library.update(design.max_orthogonality(int(sys.argv[1]), 40, alphabet="ACGT", RCfree=True, GClims=(16, 29),
+        prevented_patterns=["AAAA", "CCCC", "GGGG","TTTT","ACGCGT","ATGCAT","GGATCC","GTCGAC","GGTACC","TGATCA","CGTACG","GCGCGC","ATGCAT","CCTGCAGG","TCTAGA","GACGTC"]))
 lib = []
-for it in range(int(sys.argv[3])-1):
-    library = design.max_orthogonality(int(sys.argv[1]), 40, alphabet="ACGT", RCfree=True, GClims=(16, 28),
-        prevented_patterns=["AAAAA", "CCCCC", "GGGGG","TTTTT","ACGCGT","ATGCAT","GGATCC","GTCGAC","GGTACC","TGATCA","CGTACG","GCGCGC","ATGCAT","CCTGCAGG","TCTAGA","GACGTC"])
+dist = int(sys.argv[2])
+for i in library:
     flag = False
-    for i in library:
-        if i[19:21] not in pref:      
-            for probe in left:
-                distance = hamming(i[:20], probe)
-                if distance < dist:
-                    flag = True
-                    break
-            if flag:
-                continue
-            flag = False
-            for probe in right:
-                distance = hamming(i[:-20], probe)
-                if distance < dist:
-                    flag = True
-                    break
-            if flag:
-                continue
-        lib.append(i)
-for i in lib:
+    if i[19:21] == "AT" or i[19:21] == "TA" or i[19:21] == "GA" or i[19:21] == "AG":
+        for probe in left:
+            l = i[:20]
+            ham = hamming(l, probe)
+            gc = l.count("G") + l.count("C")
+            if ham > dist and gc > 7 and gc < 16:
+                flag = True
+                break
+        if flag:
+            continue
+        for probe in right:
+            r = i[:-20]
+            ham = hamming(r, probe)
+            gc = r.count("G") + r.count("C")
+            if ham > dist and gc > 7 and gc < 16:
+                 flag = True
+                 break
+        if flag:
+            continue
     print(i)
-
