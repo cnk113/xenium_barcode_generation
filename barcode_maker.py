@@ -8,8 +8,6 @@ import pyfastx
 
 #blacklist = set(['CG', 'GT', 'GG', 'GC'])
 pref = set(["AT", "TA", "GA", "AG"])
-# allow 4bp homopolymer, remove RE sites
-library = design.max_orthogonality(int(sys.argv[1]), 40, alphabet="ACGT", RCfree=True, GClims=(16, 28),prevented_patterns=["AAAAA", "CCCCC", "GGGGG","TTTTT","ACGCGT","ATGCAT","GGATCC","GTCGAC","GGTACC","TGATCA","CGTACG","GCGCGC","ATGCAT","CCTGCAGG","TCTAGA","GACGTC"])
 
 h = 'Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv'
 m = 'Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv'
@@ -32,7 +30,8 @@ right = [w[:-20] for w in merged]
 dist = int(sys.argv[2])
 lib = []
 for it in range(int(sys.argv[3])-1):
-    library = design.max_orthogonality(int(sys.argv[1]), 40, alphabet="ACGT", RCfree=True, GClims=(16, 28))
+    library = design.max_orthogonality(int(sys.argv[1]), 40, alphabet="ACGT", RCfree=True, GClims=(16, 28),
+        prevented_patterns=["AAAAA", "CCCCC", "GGGGG","TTTTT","ACGCGT","ATGCAT","GGATCC","GTCGAC","GGTACC","TGATCA","CGTACG","GCGCGC","ATGCAT","CCTGCAGG","TCTAGA","GACGTC"])
     flag = False
     for i in library:
         if i[19:21] not in pref:      
