@@ -33,10 +33,11 @@ merged = set(merged)
 left = [w[:20] for w in merged]
 right = [w[:-20] for w in merged]
 
+with open("re.txt") as file:
+    res = [line.rstrip() for line in file]
 library = set()
 for it in range(int(sys.argv[3])):
-    library.update(design.max_orthogonality(int(sys.argv[1]), 40, alphabet="ACGT", RCfree=True, GClims=(16, 29),
-        prevented_patterns=["AAAA", "CCCC", "GGGG","TTTT","ACGCGT","ATGCAT","GGATCC","GTCGAC","GGTACC","TGATCA","CGTACG","GCGCGC","ATGCAT","CCTGCAGG","TCTAGA","GACGTC"]))
+    library.update(design.max_orthogonality(int(sys.argv[1]), 40, alphabet="ACGT", RCfree=True, GClims=(16, 29), prevented_patterns=res))
 lib = []
 dist = int(sys.argv[2])
 for i in library:
