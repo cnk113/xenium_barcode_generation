@@ -47,31 +47,30 @@ for it in range(int(sys.argv[3])):
 dist = int(sys.argv[2])
 j = 0
 for i in library:
-    flag = False
     melt = mt.Tm_NN(i)
-    if melt < 68 or melt > 82:
-        continue
     lig = i[19:21]
-    if lig == "AT" or lig == "TA" or lig == "GA" or lig == "AG":
-        for probe in left:
-            l = i[:20]
-            ham = hamming(l, probe)
-            melt = mt.Tm_NN(l)
-            if ham < dist or melt < 50 or melt > 70:
-                flag = True
-                break
-        if flag:
-            continue
-        for probe in right:
-            r = i[:-20]
-            ham = hamming(r, probe)
-            melt = mt.Tm_NN(r)
-            if ham < dist or melt < 50 or melt > 70:
-                 flag = True
-                 break
-        if flag:
-            continue
-        print(i)
-        j += 1
-        if j == 201:
+    if lig != "AT" or lig != "TA" or lig != "GA" or lig != "AG" or melt < 68 or melt > 82:
+        continue
+    flag = False
+    for probe in left:
+        l = i[:20]
+        ham = hamming(l, probe)
+        melt = mt.Tm_NN(l)
+        if ham < dist or melt < 50 or melt > 70:
+            flag = True
             break
+    if flag:        
+        continue
+    for probe in right:
+        r = i[:-20]
+        ham = hamming(r, probe)
+        melt = mt.Tm_NN(r)
+        if ham < dist or melt < 50 or melt > 70:
+            flag = True
+            break
+    if flag:
+        continue
+    print(i)
+    j += 1
+    if j == 201:
+        break
