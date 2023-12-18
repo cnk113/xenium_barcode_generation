@@ -6,7 +6,7 @@ import pyfastx
 from Bio.SeqUtils import MeltingTemp as mt
 # python barcode_maker.py NUM_SEQ DISTANCE ITERATIONS > out.txt
 #blacklist = set(['CG', 'GT', 'GG', 'GC'])
-#pref = set(["AT", "TA", "GA", "AG"])
+pref = ["AT", "TA", "GA", "AG"]
 
 h = 'Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv'
 m = 'Chromium_Mouse_Transcriptome_Probe_Set_v1.0.1_mm10-2020-A.csv'
@@ -48,8 +48,7 @@ dist = int(sys.argv[2])
 j = 0
 for i in library:
     melt = mt.Tm_NN(i)
-    lig = i[19:21]
-    if lig != "AT" or lig != "TA" or lig != "GA" or lig != "AG" or melt < 68 or melt > 82:
+    if i[19:21] not in pref or melt < 68 or melt > 82:
         continue
     flag = False
     for probe in left:
@@ -72,5 +71,5 @@ for i in library:
         continue
     print(i)
     j += 1
-    if j == 201:
+    if j == 202:
         break
